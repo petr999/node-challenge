@@ -1,4 +1,4 @@
-import { ApiError } from '@nc/utils/errors';
+import { ApiError, ApiErrorType } from '@nc/utils/errors';
 
 interface ExpectedApiError {
   message: string
@@ -6,23 +6,22 @@ interface ExpectedApiError {
   title: string
 }
 
-const executeTriggeringFunction = (triggeringFunction) => {
+const executeTriggeringFunction = (triggeringFunction: typeof ApiError) => {
   try {
-    triggeringFunction();
+    triggeringFunction(undefined);
     return null;
   } catch (e) {
     return e;
   }
 };
 
-const assertApiError = (error: ApiError, expected: ExpectedApiError): jest.CustomMatcherResult => {
-  if (typeof error === 'function') {
-    error = executeTriggeringFunction(error);
-  }
+const assertApiError = (error: ApiErrorType | typeof ApiError, expected: ExpectedApiError): jest.CustomMatcherResult => {
+  let apiErrorObj: ApiErrorType
+  apiErrorObj = (typeof error === 'function') ?
+     executeTriggeringFunction(error):error
 
-  const isExpectedErrorType: boolean = (error instanceof ApiError)
-  && error.status === expected.status
-  && error.title === expected.title;
+  const isExpectedErrorType: boolean = apiErrorObj.status === expected.status
+  && apiErrorObj.title === expected.title;
 
   if (!isExpectedErrorType) {
     return {
@@ -31,10 +30,10 @@ const assertApiError = (error: ApiError, expected: ExpectedApiError): jest.Custo
     };
   }
 
-  if (error.message !== expected.message) {
+  if (apiErrorObj.message !== expected.message) {
     return {
       pass: false,
-      message: () => `expected ApiError<${expected.title}> with message "${expected.message}", received unexpected error message: \`${error.message}\`.`,
+      message: () => `expected ApiError<${expected.title}> with message "${expected.message}", received unexpected error message: \`${apiErrorObj.message}\`.`,
     };
   }
 
@@ -45,31 +44,31 @@ const assertApiError = (error: ApiError, expected: ExpectedApiError): jest.Custo
 };
 
 expect.extend({
-  toThrowUnauthorized<T extends ApiError>(receivedError: T, expectedMessage: string) {
+  toThrowUnauthorized<T extends ApiErrorType>(receivedError: T, expectedMessage: string) {
     return assertApiError(
       receivedError,
       { message: expectedMessage, status: 401, title: 'Unauthorized' }
     );
   },
-  toThrowBadRequest<T extends ApiError>(receivedError: T, expectedMessage: string) {
+  toThrowBadRequest<T extends ApiErrorType>(receivedError: T, expectedMessage: string) {
     return assertApiError(
       receivedError,
       { message: expectedMessage, status: 400, title: 'Bad Request' }
     );
   },
-  toThrowNotFound<T extends ApiError>(receivedError: T, expectedMessage: string) {
+  toThrowNotFound<T extends ApiErrorType>(receivedError: T, expectedMessage: string) {
     return assertApiError(
       receivedError,
       { message: expectedMessage, status: 404, title: 'Not Found' }
     );
   },
-  toThrowConflict<T extends ApiError>(receivedError: T, expectedMessage: string) {
+  toThrowConflict<T extends ApiErrorType>(receivedError: T, expectedMessage: string) {
     return assertApiError(
       receivedError,
       { message: expectedMessage, status: 409, title: 'Conflict' }
     );
   },
-  toThrowInternalError<T extends ApiError>(receivedError: T, expectedMessage: string) {
+  toThrowInternalError<T extends ApiErrorType>(receivedError: T, expectedMessage: string) {
     return assertApiError(
       receivedError,
       { message: expectedMessage, status: 500, title: 'Internal Server Error' }
