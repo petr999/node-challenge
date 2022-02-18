@@ -9,7 +9,12 @@ export function connect() {
 }
 
 export async function query(queryString: string, parameters?: any) {
-  if (!db) await connect();
+  try {
+    if (!db) await connect();
+  } catch (e) {
+    db = undefined;
+    throw e;
+  }
 
   return db.query(queryString, parameters);
 }
