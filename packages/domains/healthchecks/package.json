@@ -1,0 +1,7 @@
+{
+    "name": "@nc/domain-healthchecks",
+    "version": "0.0.0",
+    "description": "Healthchecks domain logic",
+    "private": true,
+    "dependencies": {}
+  }

@@ -24,7 +24,8 @@ describe('[Packages | User-domain | Formatter] secureTrim', () => {
       first_name: 'John',
       last_name: 'Smith',
       company_name: 'Pleo',
-      ssn: 1,
+      ssn: `1`,
+      id: `1`,
     })).toEqual(JSON.stringify({
       first_name: 'John',
       last_name: 'Smith',
