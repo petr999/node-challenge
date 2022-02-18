@@ -22,10 +22,6 @@ app.get('/readycheck', function readinessEndpoint(req, res) {
   res.status(status).json(msg);
 });
 
-app.get('/healthcheck', function healthcheckEndpoint(req, res) {
-  res.status(200).json('OK');
-});
-
 app.use(context);
 app.use(security);
 
