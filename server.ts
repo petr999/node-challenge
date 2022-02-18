@@ -2,10 +2,12 @@ import config from 'config';
 import context from './middleware/context';
 import express from 'express';
 import gracefulShutdown from '@nc/utils/graceful-shutdown';
+import { router as healthcheckRoutes } from './packages/domains/healthchecks';
 import helmet from 'helmet';
 import Logger from '@nc/utils/logging';
 import security from './middleware/security';
 import { router as userRoutes } from '@nc/domain-user';
+
 import { createServer as createHTTPServer, Server } from 'http';
 import { createServer as createHTTPSServer, Server as SecureServer } from 'https';
 
@@ -26,6 +28,7 @@ app.use(context);
 app.use(security);
 
 app.use('/user', userRoutes);
+app.use(healthcheckRoutes);
 
 app.use(function(req, res) {
   res.status(404).json('Not Found');
