@@ -16,9 +16,8 @@ const executeTriggeringFunction = (triggeringFunction: typeof ApiError) => {
 };
 
 const assertApiError = (error: ApiErrorType | typeof ApiError, expected: ExpectedApiError): jest.CustomMatcherResult => {
-  let apiErrorObj: ApiErrorType
-  apiErrorObj = (typeof error === 'function') ?
-     executeTriggeringFunction(error):error
+  const apiErrorObj: ApiErrorType = (typeof error === 'function') ?
+    executeTriggeringFunction(error) : error;
 
   const isExpectedErrorType: boolean = apiErrorObj.status === expected.status
   && apiErrorObj.title === expected.title;
