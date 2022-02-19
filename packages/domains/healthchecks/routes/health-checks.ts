@@ -16,7 +16,7 @@ router.get('/db-healthcheck', async function dbHealthcheckEndpoint(req, res) {
   let dbResult: QueryResult<any>;
   try {
     dbResult = await dbHealthcheck();
-    colName = Object.keys(dbResult.rows[0])[0];
+    colName = Object.keys(dbResult.rows?.[0])?.[0];
   } catch (e) {
     dbError = true;
     msg = e.message;
