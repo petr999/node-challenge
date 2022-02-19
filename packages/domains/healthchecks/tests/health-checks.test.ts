@@ -13,11 +13,13 @@ describe('db-healthcheck', () => {
       rows: [{ col: 1 }], rowCount: 1, command: '', oid: 1, fields: [],
     })));
     expect(await dbHealthcheck()).toEqual([true, '']);
+    expect(db.query).toBeCalledTimes(1);
   });
   test('Unhappy health check returns false', async () => {
     queryMock.mockImplementationOnce(() => new Promise((resolve) => resolve({
       rows: [], rowCount: 0, command: '', oid: 1, fields: [],
     })));
     expect(await dbHealthcheck()).toEqual([false, '']);
+    expect(db.query).toBeCalledTimes(1);
   });
 });
