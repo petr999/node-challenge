@@ -1,6 +1,6 @@
 import { dbHealthcheck } from '../data/db-healthcheck';
+import { QueryResult } from 'pg';
 import { Router } from 'express';
-import { to } from '@nc/utils/async';
 
 export const router = Router();
 
@@ -9,12 +9,23 @@ router.get('/healthcheck', function healthcheckEndpoint(req, res) {
 });
 
 router.get('/db-healthcheck', async function dbHealthcheckEndpoint(req, res) {
-  const [dbError, dbResult] = await to(dbHealthcheck());
+  // let status: number
+  let [status, msg] = [500, 'Db Healthcheck is broken'];
+  let colName: string;
+  let dbError = false;
+  let dbResult: QueryResult<any>;
+  try {
+    dbResult = await dbHealthcheck();
+    colName = Object.keys(dbResult.rows[0])[0];
+  } catch (e) {
+    dbError = true;
+    msg = e.message;
+  }
 
-  const [status, msg] =
-  (dbError || !dbResult || (1 !== dbResult))
-    ? [503, 'NOT OK' + (dbError
-      ? `: '${dbError.message}'` : ''),
+  [status, msg] = (dbError || !dbResult || (1 !== dbResult.rows.length)
+  || (1 !== dbResult.rows[0][colName]))
+    ? [503, 'NOT OK' + (msg
+      ? `: '${msg}'` : ''),
     ] :
     [200, 'OK'];
 

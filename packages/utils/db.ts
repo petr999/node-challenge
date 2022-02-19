@@ -1,7 +1,7 @@
 import { Client } from 'pg';
 import config from 'config';
 
-let db;
+let db: Client;
 
 export function connect() {
   db = new Client(config.db);
