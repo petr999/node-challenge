@@ -2,7 +2,7 @@ import config from 'config';
 import context from './middleware/context';
 import express from 'express';
 import gracefulShutdown from '@nc/utils/graceful-shutdown';
-import { router as healthcheckRoutes } from './packages/domains/healthchecks';
+import { router as healthcheckRoutes } from './packages/healthchecks';
 import helmet from 'helmet';
 import Logger from '@nc/utils/logging';
 import security from './middleware/security';
