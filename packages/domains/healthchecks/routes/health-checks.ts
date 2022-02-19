@@ -9,11 +9,11 @@ router.get('/healthcheck', function healthcheckEndpoint(req, res) {
 });
 
 router.get('/db-healthcheck', async function dbHealthcheckEndpoint(req, res) {
-  // let status: number
   let [status, msg] = [500, 'Db Healthcheck is broken'];
   let colName: string;
   let dbError = false;
   let dbResult: QueryResult<any>;
+
   try {
     dbResult = await dbHealthcheck();
     colName = Object.keys(dbResult.rows?.[0])?.[0];
