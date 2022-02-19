@@ -15,7 +15,7 @@ export async function dbHealthcheck() {
   }
 
   const dbQuerySuccess = !dbError && dbResult && (1 === dbResult.rowCount)
-  && (1 === Object.entries(dbResult.rows[0])[0][1]);
+  && (1 === Object.entries(dbResult.rows?.[0]??{})?.[0]?.[1]);
 
   return [dbQuerySuccess, msg];
 }

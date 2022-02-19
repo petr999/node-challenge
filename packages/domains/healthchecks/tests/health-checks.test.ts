@@ -14,4 +14,10 @@ describe('db-healthcheck', () => {
     })));
     expect(await dbHealthcheck()).toEqual([true, '']);
   });
+  test('Unhappy health check returns false', async () => {
+    queryMock.mockImplementationOnce(() => new Promise((resolve) => resolve({
+      rows: [], rowCount: 0, command: '', oid: 1, fields: [],
+    })));
+    expect(await dbHealthcheck()).toEqual([false, '']);
+  });
 });
