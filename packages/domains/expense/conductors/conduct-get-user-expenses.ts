@@ -9,10 +9,10 @@ export const getFindArgs = (reqQuery) => {
 
 export const conductGetUserExpenses = (req: Request) => {
   let conductError;
-  let [userId, findArgs] = [undefined, {}];
-  userId = req.params?.userId;
+  
+  const userId = req.params?.userId;
   if (!userId) conductError = BadRequest('User: not set');
-  findArgs = getFindArgs(req.query);
+  const findArgs = getFindArgs(req.query);
 
   return { findArgs, conductError, userId };
 };
