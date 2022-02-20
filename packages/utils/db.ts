@@ -1,20 +1,20 @@
 import { Client } from 'pg';
 import config from 'config';
 
-let db: Client;
+let dbConnection: Client;
 
 export function connect() {
-  db = new Client(config.db);
-  return db.connect();
+  dbConnection = new Client(config.db);
+  return dbConnection.connect();
 }
 
 export async function query(queryString: string, parameters?: any) {
   try {
-    if (!db) await connect();
+    if (!dbConnection) await connect();
   } catch (e) {
-    db = undefined;
+    dbConnection = undefined;
     throw e;
   }
 
-  return db.query(queryString, parameters);
+  return dbConnection.query(queryString, parameters);
 }
