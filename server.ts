@@ -1,6 +1,7 @@
 import config from 'config';
 import context from './middleware/context';
 import { dbConnect } from './packages/utils/db';
+import { router as expenseRoutes } from '@nc/domain-expense';
 import express from 'express';
 import gracefulShutdown from '@nc/utils/graceful-shutdown';
 import { router as healthcheckRoutes } from './packages/healthchecks';
@@ -32,6 +33,7 @@ const server: Server | SecureServer = (config.https.enabled === true) ? createHT
   app.use(context);
   app.use(security);
 
+  app.use('/expense', expenseRoutes);
   app.use('/user', userRoutes);
   app.use(healthcheckRoutes);
 
