@@ -2,10 +2,10 @@ import { Client } from 'pg';
 import config from 'config';
 import { Connection } from 'typeorm';
 
-export let dbConnection : {
-  typeOrm?: Connection,
-  [k: string]: any,
-}={};
+export const dbConnection: {
+  typeOrm?: Connection
+  [k: string]: any
+} = {};
 
 export function connect() {
   dbConnection.client = new Client(config.db);
@@ -20,7 +20,5 @@ export async function query(queryString: string, parameters?: any) {
     throw e;
   }
 
-  console.log(await dbConnection.typeOrm.query(queryString, parameters))
-
-  return await dbConnection.typeOrm.query(queryString, parameters);
+  return dbConnection.typeOrm.query(queryString, parameters);
 }

@@ -1,5 +1,4 @@
 import { query } from '@nc/utils/db';
-import { QueryResult } from 'pg';
 
 export async function dbHealthcheck() {
   const dbQuery = 'SELECT 1';
