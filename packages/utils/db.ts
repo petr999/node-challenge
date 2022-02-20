@@ -14,7 +14,7 @@ export async function dbConnect() {
 
 export async function query(queryString: string, parameters?: any) {
   try {
-    if (!typeormConnection.isConnected) dbConnect();
+    if (!typeormConnection.isConnected) await dbConnect();
   } catch (e) {
     typeormConnection = undefined;
     throw e;

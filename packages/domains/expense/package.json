@@ -3,5 +3,9 @@
     "version": "0.0.0",
     "description": "Expenses domain logic",
     "private": true,
-    "dependencies": {}
-  }
+    "dependencies": {
+        "express": "^4.17.3",
+        "@nc/utils": "0.0.0",
+        "typeorm": "^0.2.43"
+    }
+}
