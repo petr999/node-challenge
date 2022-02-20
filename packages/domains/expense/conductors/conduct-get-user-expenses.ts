@@ -1,7 +1,7 @@
 import { BadRequest } from '@nc/utils/errors';
 import { Request } from 'express';
 
-const getFindArgs = (reqQuery) => {
+export const getFindArgs = (reqQuery) => {
   const findArgs = reqQuery ? {} : {};
 
   return findArgs;
