@@ -1,7 +1,7 @@
 import config from 'config';
 import context from './middleware/context';
-import { createConnection } from 'typeorm';
-import { dbConnection } from './packages/utils/db'; import express from 'express';
+import { dbConnect } from './packages/utils/db';
+import express from 'express';
 import gracefulShutdown from '@nc/utils/graceful-shutdown';
 import { router as healthcheckRoutes } from './packages/healthchecks';
 import helmet from 'helmet';
@@ -16,9 +16,7 @@ const app = express();
 const server: Server | SecureServer = (config.https.enabled === true) ? createHTTPSServer(config.https, app as any) : createHTTPServer(app as any);
 
 (async () => {
-  dbConnection.typeOrm =
-  await createConnection({ ...config.db,
-    type: 'postgres', username: config.db.user });
+  await dbConnect();
 
   const logger = Logger('server');
   let serverReady = false;
