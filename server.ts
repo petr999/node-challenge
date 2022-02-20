@@ -11,8 +11,6 @@ import { router as userRoutes } from '@nc/domain-user';
 import { createServer as createHTTPServer, Server } from 'http';
 import { createServer as createHTTPSServer, Server as SecureServer } from 'https';
 
-// import {dbConnection} from './packages/utils/db'
-
 const logger = Logger('server');
 const app = express();
 const server: Server | SecureServer = (config.https.enabled === true) ? createHTTPSServer(config.https, app as any) : createHTTPServer(app as any);
