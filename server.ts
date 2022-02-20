@@ -7,15 +7,23 @@ import helmet from 'helmet';
 import Logger from '@nc/utils/logging';
 import security from './middleware/security';
 import { router as userRoutes } from '@nc/domain-user';
+import {createConnection} from "typeorm";
+import {dbConnection} from './packages/utils/db'
 
 import { createServer as createHTTPServer, Server } from 'http';
 import { createServer as createHTTPSServer, Server as SecureServer } from 'https';
 
-// import {dbConnection} from './packages/utils/db'
 
-const logger = Logger('server');
 const app = express();
 const server: Server | SecureServer = (config.https.enabled === true) ? createHTTPSServer(config.https, app as any) : createHTTPServer(app as any);
+
+(async ()=>
+{
+dbConnection.typeOrm = 
+  await createConnection({...config.db,
+  type: "postgres", username: config.db.user,})
+
+const logger = Logger('server');
 let serverReady = false;
 
 gracefulShutdown(server);
@@ -40,5 +48,7 @@ server.listen(config.port, () => {
   serverReady = true;
   logger.log(`Server started on port ${config.port}`);
 });
+}
 
+)()
 export default server;
