@@ -7,12 +7,11 @@ import { to } from '@nc/utils/async';
 export const router = Router();
 
 router.get('/user/:userId/expenses', async (req, res, next) => {
-  let userError; let
-    userExpenses;
-  const { findArgs, conductError, userId } = conductGetUserExpenses(req);
+  const { conductError, findArgs, userId } = conductGetUserExpenses(req);
 
-  if (conductError) userError = conductError;
-  else [userError, userExpenses] = await to(getUserExpenses(userId, findArgs));
+  if (conductError) return next(new ApiError(conductError, conductError.status, `Invalid user input: '${userId}'`, conductError.title, req));
+
+  const [userError, userExpenses] = await to(getUserExpenses(userId, findArgs));
 
   if (userError) {
     return next(new ApiError(userError, userError.status, `Could not get user expenses: ${userError}`, userError.title, req));
