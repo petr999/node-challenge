@@ -1,20 +1,23 @@
-import { Client } from 'pg';
 import config from 'config';
+import { Connection, createConnection } from 'typeorm';
 
-let dbConnection: Client;
-
-export function connect() {
-  dbConnection = new Client(config.db);
-  return dbConnection.connect();
+let
+  typeormConnection:
+   Connection;
+export async function dbConnect() {
+  if (!typeormConnection) {
+    typeormConnection = await createConnection({ ...config.db,
+      type: 'postgres', username: config.db.user });
+  }
+  return typeormConnection;
 }
 
 export async function query(queryString: string, parameters?: any) {
   try {
-    if (!dbConnection) await connect();
+    if (!typeormConnection.isConnected) dbConnect();
   } catch (e) {
-    dbConnection = undefined;
+    typeormConnection = undefined;
     throw e;
   }
-
-  return dbConnection.query(queryString, parameters);
+  return typeormConnection.query(queryString, parameters);
 }
