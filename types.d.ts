@@ -15,6 +15,7 @@ interface ConfigDefinition {
     debug: {
         stackSize: number
     }
+    entities: string[]
     shutdown: {
         appKill: number
         serverClose: number

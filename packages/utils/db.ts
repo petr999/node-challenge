@@ -1,5 +1,4 @@
 import config from 'config';
-import path from 'path';
 import { Connection, createConnection } from 'typeorm';
 
 let typeormConnection: Connection;
@@ -8,9 +7,7 @@ export async function dbConnect() {
   if (!typeormConnection) {
     typeormConnection = await createConnection({ ...config.db,
       type: 'postgres', username: config.db.user,
-      entities: [
-        path.resolve(__dirname, '../**/entity/*.{ts,js}'),
-      ],
+      entities: config.entities,
     });
   }
   return typeormConnection;
