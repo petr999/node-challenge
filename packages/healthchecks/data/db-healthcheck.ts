@@ -1,4 +1,4 @@
-import { query } from '@nc/utils/db';
+import { getConnection } from '@nc/utils/dal';
 
 export async function dbHealthcheck() {
   const dbQuery = 'SELECT 1';
@@ -7,7 +7,7 @@ export async function dbHealthcheck() {
   let dbResult: {}[];
 
   try {
-    dbResult = await query(dbQuery);
+    dbResult = await getConnection().query(dbQuery);
   } catch (e) {
     dbError = true;
     msg = e.message;

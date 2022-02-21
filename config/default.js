@@ -18,7 +18,7 @@ module.exports = {
   i18next: {
     translationFilePath: path.resolve(__dirname, '..', 'locales/{{lng}}/{{ns}}.json'),
   },
-  entities: [path.resolve(__dirname, 'packages/domans/*/entity/*.{ts,js}'),
+  entities: [path.resolve(__dirname, '../packages/domains/*/entity/*.{ts,js}'),
   ],
   host: 'localhost:9001',
   https: {

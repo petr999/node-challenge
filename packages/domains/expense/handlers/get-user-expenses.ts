@@ -1,10 +1,9 @@
-import { dbConnect } from '../../../utils/db';
-import { Expense } from '../entity/expense';
+import { Expense } from '../entity';
 import { ExpenseFindArgs } from '../types.d';
+import { getRepository } from '@nc/utils/dal';
 
-export const getUserExpenses = async (userId: string, findArgs: ExpenseFindArgs) => {
-  const connection = await dbConnect();
-  const expenseRepository = connection.getRepository(Expense);
+export const getUserExpenses = (userId: string, findArgs: ExpenseFindArgs) => {
+  const expenseRepository = getRepository(Expense);
 
   if (findArgs.where) findArgs.where.userId = userId;
   else findArgs.where = { userId };

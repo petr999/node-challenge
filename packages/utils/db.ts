@@ -1,5 +1,5 @@
 import config from 'config';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, createConnection } from './dal';
 
 let typeormConnection: Connection;
 
@@ -11,14 +11,4 @@ export async function dbConnect() {
     });
   }
   return typeormConnection;
-}
-
-export async function query(queryString: string, parameters?: any) {
-  try {
-    if (!typeormConnection.isConnected) await dbConnect();
-  } catch (e) {
-    typeormConnection = undefined;
-    throw e;
-  }
-  return typeormConnection.query(queryString, parameters);
 }

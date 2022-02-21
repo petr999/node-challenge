@@ -1,25 +1,30 @@
-import * as db from '@nc/utils/db';
+import { Connection } from '@nc/utils/dal';
 import { dbHealthcheck } from '../data/db-healthcheck';
+import { mockConnection } from './utils/mocks/dal';
 
-const queryMock = jest.spyOn(db, 'query');
+let connection: Connection;
+let queryMock: jest.SpyInstance<any, unknown[]>;
 
-afterEach(() => {
-  queryMock.mockClear();
+beforeEach(async () => {
+  queryMock = jest.spyOn(Connection.prototype, 'query');
+  connection = await mockConnection();
+});
+
+afterEach(async () => {
+  await connection.close();
+  queryMock.mockRestore();
 });
 
 describe('db-healthcheck', () => {
   test('Happy health check returns true', async () => {
-    queryMock.mockImplementationOnce(() => new Promise((resolve) => resolve({
-      rows: [{ col: 1 }], rowCount: 1, command: '', oid: 1, fields: [],
-    })));
+    queryMock.mockImplementationOnce(() => new Promise((resolve) => resolve([{ col: 1 }])));
+
     expect(await dbHealthcheck()).toEqual([true, '']);
-    expect(db.query).toBeCalledTimes(1);
+    expect(queryMock).toBeCalledTimes(1);
   });
   test('Unhappy health check returns false', async () => {
-    queryMock.mockImplementationOnce(() => new Promise((resolve) => resolve({
-      rows: [], rowCount: 0, command: '', oid: 1, fields: [],
-    })));
+    queryMock.mockImplementationOnce(() => []);
     expect(await dbHealthcheck()).toEqual([false, '']);
-    expect(db.query).toBeCalledTimes(1);
+    expect(queryMock).toBeCalledTimes(1);
   });
 });
