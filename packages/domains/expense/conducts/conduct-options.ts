@@ -2,7 +2,19 @@ import { BadRequest } from '@nc/utils/errors';
 import { Request } from 'express';
 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
-// const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
+const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
+
+export const getWhereByReq = (reqQueryWhere: {[k: string]: number | string | any[] |object}) => {
+  const where: {[k: string]: number | string | any[] |object} = {};
+  queryColumnsToMatch.forEach((key) => {
+    switch (key) {
+      case 'currency':
+        if (reqQueryWhere?.currency && 'string' === typeof reqQueryWhere.currency) where.currency = reqQueryWhere.currency;
+        break;
+    }
+  });
+  return where;
+};
 
 export const getFindArgs = (reqQuery) => {
   const findArgs = {};
@@ -12,7 +24,8 @@ export const getFindArgs = (reqQuery) => {
       if (reqQuery?.[key]) {
         let value;
         switch (key) {
-          case 'currency':
+          case 'where':
+            value = getWhereByReq(reqQuery.where);
             break;
           // reqQuery[key]
           // TBD

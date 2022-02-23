@@ -1,7 +1,7 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
 import { BadRequest } from '@nc/utils';
-import { conductOptions, getFindArgs } from '../../conducts';
+import { conductOptions, getFindArgs, getWhereByReq } from '../../conducts';
 
 describe('Handle invalid Request', () => {
   test('Return error on empty Request', () => {
@@ -21,9 +21,20 @@ describe('Take user id from Request to Options', () => {
 });
 
 describe('Take only the necessary keys from Request to findAndCount() arguments', () => {
-  test('Take "where" from Request', () => {
-    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: 'DKK' } } };
+  test('Take "currency" to "where" from Request, skip "bogus" from "where"', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: 'DKK', notknown: 'bogus' } } };
     const [findArgs, conductError, userId] = [{ where: { currency: 'DKK' } }, undefined, req.params.userId];
+
+    expect(getWhereByReq(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
+  test('Take "currency" object to "where" as string from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: { DKK: 'KKD' }, notknown: 'bogus' } } };
+    const [findArgs, conductError, userId] = [{ where: { } }, undefined, req.params.userId];
+
+    expect(getWhereByReq(req.query.where)).toEqual(findArgs.where);
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
