@@ -2,17 +2,19 @@
 
 import { conductOptions } from "../../conducts";
 
-const req = {params: {}, query: {},}
-
 describe('Throw on invalid Request', () => {
   test('Throw on empty Request', () => {
+    const req = {params: {}, query: {},}
+
     try{
       conductOptions(req)
     } catch(e){
       expect(e.status).toBe(400);
     }
   });
-}); // TBD
+});
+
+// TBD
 
 // describe('Arguments to find user\'s expenses', () => {
 //   describe('Get user\'s ID and arguments for expenses to find()', () => {
