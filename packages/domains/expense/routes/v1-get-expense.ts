@@ -1,5 +1,5 @@
 import { ApiError } from '@nc/utils/errors';
-import { conductGetUserExpenses } from '../conductors';
+import { conductGetUserExpenses } from '../conducts';
 import { getUserExpenses } from '../model';
 import { Router } from 'express';
 import { secureTrim } from '../formatter';
