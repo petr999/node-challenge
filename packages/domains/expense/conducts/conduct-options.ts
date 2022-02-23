@@ -1,29 +1,36 @@
 import { BadRequest } from '@nc/utils/errors';
 import { Expense } from '../entity';
-import { FindConditions } from '@nc/utils';
 import { Request } from 'express';
+import { FindConditions, FindOperator, Like } from '@nc/utils';
 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
 // const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
 
-type JsonFlatContentTypes = {[k: string]: number | string }
+type WhereType = {[k: string]: number | string | FindOperator<string> }
 type JsonContentTypes = {[k: string]: number | string | any[] |object}
 
-export const getWhereAndLikes = (reqQueryWhere: JsonContentTypes) => {
-  let whereAndLikes = {} as JsonContentTypes;
-  const [where, likes]: JsonFlatContentTypes[] = [{}];
+export const getWhereMerchantName = (nameByReq: string) => {
+  const merchantName = nameByReq.match(/\*/)
+    ? Like(nameByReq.replace(/\*+/, '%'))
+    : nameByReq;
+
+  return merchantName;
+};
+
+export const getWhere = (reqQueryWhere: JsonContentTypes) => {
+  const where: WhereType = {};
   Object.keys(reqQueryWhere).forEach((key) => {
     switch (key) {
       case 'currency':
         if (reqQueryWhere?.currency && 'string' === typeof reqQueryWhere.currency) where.currency = reqQueryWhere.currency;
         break;
+      case 'merchantName':
+        if (reqQueryWhere?.merchantName && 'string' === typeof reqQueryWhere.merchantName) where.merchantName = getWhereMerchantName(reqQueryWhere.merchantName);
+        break;
     }
   });
 
-  if (where) whereAndLikes.where = where;
-  if (likes) whereAndLikes.likes = likes;
-
-  return whereAndLikes;
+  return where;
 };
 
 export const getFindArgs = (reqQuery): FindConditions<Expense> => {
@@ -32,11 +39,11 @@ export const getFindArgs = (reqQuery): FindConditions<Expense> => {
   if (reqQuery) {
     queryKeysToFind.forEach((key) => {
       if (reqQuery?.[key]) {
-        let whereAndLikes;
+        let where;
         switch (key) {
           case 'where':
-            whereAndLikes = getWhereAndLikes(reqQuery.where);
-            if (whereAndLikes)findArgs = { ...findArgs, ...whereAndLikes };
+            where = getWhere(reqQuery.where);
+            if (where)findArgs = { ...findArgs, where };
             break;
 
           // reqQuery[key]
