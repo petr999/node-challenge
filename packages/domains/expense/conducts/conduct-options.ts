@@ -1,8 +1,27 @@
 import { BadRequest } from '@nc/utils/errors';
 import { Request } from 'express';
 
+const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
+// const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
+
 export const getFindArgs = (reqQuery) => {
-  const findArgs = reqQuery ? {} : {};
+  const findArgs = {};
+
+  if (reqQuery) {
+    queryKeysToFind.forEach((key) => {
+      if (reqQuery?.[key]) {
+        let value;
+        switch (key) {
+          case 'currency':
+            break;
+          // reqQuery[key]
+          // TBD
+        }
+
+        if (value)findArgs[key] = value;
+      }
+    });
+  }
 
   return findArgs;
 };

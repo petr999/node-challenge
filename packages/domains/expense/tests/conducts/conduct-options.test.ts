@@ -1,7 +1,7 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
 import { BadRequest } from '@nc/utils';
-import { conductOptions } from '../../conducts';
+import { conductOptions, getFindArgs } from '../../conducts';
 
 describe('Handle invalid Request', () => {
   test('Return error on empty Request', () => {
@@ -16,6 +16,15 @@ describe('Take user id from Request to Options', () => {
   test('Take user id Request', () => {
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: {} };
     const [findArgs, conductError, userId] = [{}, undefined, req.params.userId];
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+});
+
+describe('Take only the necessary keys from Request to findAndCount() arguments', () => {
+  test('Take "where" from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: 'DKK' } } };
+    const [findArgs, conductError, userId] = [{ where: { currency: 'DKK' } }, undefined, req.params.userId];
+    expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
 });
