@@ -1,13 +1,17 @@
 import { BadRequest } from '@nc/utils/errors';
+import { Expense } from '../entity';
+import { FindConditions } from '@nc/utils';
 import { Request } from 'express';
 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
 // const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
 
+type JsonFlatContentTypes = {[k: string]: number | string }
 type JsonContentTypes = {[k: string]: number | string | any[] |object}
 
-export const getWhereByReq = (reqQueryWhere: JsonContentTypes) => {
-  const where: JsonContentTypes = {};
+export const getWhereAndLikes = (reqQueryWhere: JsonContentTypes) => {
+  let whereAndLikes = {} as JsonContentTypes;
+  const [where, likes]: JsonFlatContentTypes[] = [{}];
   Object.keys(reqQueryWhere).forEach((key) => {
     switch (key) {
       case 'currency':
@@ -15,25 +19,31 @@ export const getWhereByReq = (reqQueryWhere: JsonContentTypes) => {
         break;
     }
   });
-  return where;
+
+  if (where) whereAndLikes.where = where;
+  if (likes) whereAndLikes.likes = likes;
+
+  return whereAndLikes;
 };
 
-export const getFindArgs = (reqQuery) => {
-  const findArgs = {};
+export const getFindArgs = (reqQuery): FindConditions<Expense> => {
+  let findArgs = {};
 
   if (reqQuery) {
     queryKeysToFind.forEach((key) => {
       if (reqQuery?.[key]) {
-        let value;
+        let whereAndLikes;
         switch (key) {
           case 'where':
-            value = getWhereByReq(reqQuery.where);
+            whereAndLikes = getWhereAndLikes(reqQuery.where);
+            if (whereAndLikes)findArgs = { ...findArgs, ...whereAndLikes };
             break;
+
           // reqQuery[key]
           // TBD
         }
 
-        if (value)findArgs[key] = value;
+        // if (value)findArgs[key] = value;
       }
     });
   }

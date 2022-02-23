@@ -1,7 +1,7 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
-import { BadRequest } from '@nc/utils';
-import { conductOptions, getFindArgs, getWhereByReq } from '../../conducts';
+import { BadRequest, Like } from '@nc/utils';
+import { conductOptions, getFindArgs, getWhereAndLikes } from '../../conducts';
 
 describe('Handle invalid Request', () => {
   test('Return error on empty Request', () => {
@@ -25,7 +25,7 @@ describe('Take only the necessary keys from Request to findAndCount() arguments'
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: 'DKK', notknown: 'bogus' } } };
     const [findArgs, conductError, userId] = [{ where: { currency: 'DKK' } }, undefined, req.params.userId];
 
-    expect(getWhereByReq(req.query.where)).toEqual(findArgs.where);
+    expect(getWhereAndLikes(req.query.where)).toEqual({ where: findArgs.where });
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
@@ -34,7 +34,33 @@ describe('Take only the necessary keys from Request to findAndCount() arguments'
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: { DKK: 'KKD' }, notknown: 'bogus' } } };
     const [findArgs, conductError, userId] = [{ where: { } }, undefined, req.params.userId];
 
-    expect(getWhereByReq(req.query.where)).toEqual(findArgs.where);
+    expect(getWhereAndLikes(req.query.where)).toEqual({ where: findArgs.where });
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
+  test('Take "merchantName" string to "where" as is from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: 'Donkey Republic' } } };
+    const [findArgs, conductError, userId] = [{ where: { merchantName: 'Donkey Republic' } }, undefined, req.params.userId];
+
+    expect(getWhereAndLikes(req.query.where)).toEqual({ where: findArgs.where });
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+  test('Not take "merchantName" object to "where" as is from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: { short: 'Donkey Republic' } } } };
+    const [findArgs, conductError, userId] = [{ where: { } }, undefined, req.params.userId];
+
+    expect(getWhereAndLikes(req.query.where)).toEqual({ where: findArgs.where });
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
+  test('Take "merchantName" string to "where" as wildcard from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: 'Donkey*' } } };
+    const [findArgs, conductError, userId] = [{ merchantName: Like('Donkey%') }, undefined, req.params.userId];
+
+    expect(getWhereAndLikes(req.query.where)).toEqual({ merchantName: findArgs.merchantName });
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
