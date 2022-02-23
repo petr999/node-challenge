@@ -95,12 +95,12 @@ describe('Take "amount" from Request to findAndCount() arguments', () => {
 
 describe('Throw on both "amount_min" and "amount_max" from Request to findAndCount() arguments', () => {
   test('Throw on both "amount_min" and "amount_max" strings to "where" from Request', () => {
-    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amount_min: '44.5', amount_max: '8e1' } } };
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMin: '44.5', amountMax: '8e1' } } };
     try {
       conductOptions(req);
       expect(() => {}).toThrow(); // should throw on previous line
     } catch (e) {
-      expect(e.status).toBe(500);
+      expect(e.status).toBe(400);
     }
   });
 });

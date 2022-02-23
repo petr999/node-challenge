@@ -25,10 +25,10 @@ export function getWhereAmountPartial(key: string, val: number | undefined, wher
       case 'amount':
         where.amountInCents = amountInCents;
         break;
-      case 'amount_min':
+      case 'amountMin':
         where.amountInCents = MoreThanOrEqual(amountInCents);
         break;
-      case 'amount_max':
+      case 'amountMax':
         where.amountInCents = LessThanOrEqual(amountInCents);
         break;
     }
@@ -48,7 +48,8 @@ export const getWhere = (reqQueryWhere: JsonContentTypes) => {
       case 'amount':
       case 'amountMin':
       case 'amountMax':
-        if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, parseFloat(reqQueryWhere[key].toString()), where); // changes 'where'!
+        if (where.amountInCents) throw (BadRequest('Only single amount* per request is allowed'));
+        if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, parseFloat(reqQueryWhere[key].toString()), where); // this changes the 'where'!
         break;
     }
   });
