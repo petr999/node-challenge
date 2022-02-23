@@ -1,7 +1,8 @@
 import { ApiError } from '@nc/utils/errors';
 import { conductGetUserExpenses } from '../conductors';
-import { getUserExpenses } from '../handlers';
+import { getUserExpenses } from '../model';
 import { Router } from 'express';
+import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
 export const router = Router();
@@ -22,7 +23,6 @@ router.get('/user/:userId', async (req, res, next) => {
   }
 
   return res.json(
-    // secureTrim
-    (userExpenses)
+    secureTrim(...userExpenses)
   );
 });

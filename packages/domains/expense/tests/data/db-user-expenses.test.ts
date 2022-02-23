@@ -1,8 +1,9 @@
 import { Connection } from '@nc/utils/dal';
-import { getUserExpenses } from '../handlers/get-user-expenses';
-import { mockConnection } from './utils/mocks/dal';
+import { mockConnection } from '../utils/mocks/dal';
+import { readUserExpenses } from '../../data/db-user-expenses';
 
 const emptyUserExpenses = [[], 0] as [[], number];
+const [emptyUserId] = [''];
 const fakeUserId = '98925892-8d0c-4cd3-bdbd-e2249e15900f';
 
 describe('Get User Expenses', () => {
@@ -19,14 +20,25 @@ describe('Get User Expenses', () => {
     getRepositoryMock.mockRestore();
   });
 
-  test('getUserExpenses', async () => {
+  test('get empty user expenses', async () => {
     // Arrange
     getRepositoryMock.mockImplementationOnce(() => ({
       findAndCount: () => new Promise((resolve) => resolve(emptyUserExpenses)),
     }));
 
     // Assess
-    expect(await getUserExpenses(fakeUserId, {})).toEqual(emptyUserExpenses);
+    expect(await readUserExpenses(emptyUserId, {})).toEqual(emptyUserExpenses);
+    expect(getRepositoryMock).toBeCalledTimes(1);
+  });
+
+  test('get empty user expenses', async () => {
+    // Arrange
+    getRepositoryMock.mockImplementationOnce(() => ({
+      findAndCount: () => new Promise((resolve) => resolve(emptyUserExpenses)),
+    }));
+
+    // Assess
+    expect(await readUserExpenses(fakeUserId, {})).toEqual(emptyUserExpenses);
     expect(getRepositoryMock).toBeCalledTimes(1);
   });
 });
