@@ -7,7 +7,7 @@ export const getFindArgs = (reqQuery) => {
   return findArgs;
 };
 
-export const conductGetUserExpenses = (req: Request) => {
+export const conductOptions = (req: Request) => {
   let conductError;
 
   const userId = req.params?.userId;

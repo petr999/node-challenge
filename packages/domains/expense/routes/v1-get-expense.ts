@@ -1,5 +1,5 @@
 import { ApiError } from '@nc/utils/errors';
-import { conductGetUserExpenses } from '../conducts';
+import { conductOptions } from '../conducts';
 import { getUserExpenses } from '../model';
 import { Router } from 'express';
 import { secureTrim } from '../formatter';
@@ -8,7 +8,7 @@ import { to } from '@nc/utils/async';
 export const router = Router();
 
 router.get('/user/:userId', async (req, res, next) => {
-  const { conductError, findArgs, userId } = conductGetUserExpenses(req);
+  const { conductError, findArgs, userId } = conductOptions(req);
 
   if (conductError) return next(new ApiError(conductError, conductError.status, `Invalid user input: '${userId}'`, conductError.title, req));
 
