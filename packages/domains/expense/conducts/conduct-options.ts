@@ -1,12 +1,12 @@
 import { BadRequest } from '@nc/utils/errors';
 import { Expense } from '../entity';
 import { Request } from 'express';
-import { FindConditions, FindOperator, Like } from '@nc/utils';
+import { FindConditions, FindOperator, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
 // const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
 
-type WhereType = {[k: string]: number | string | FindOperator<string> }
+type WhereType = {[k: string]: number | string | FindOperator<string|number> }
 type JsonContentTypes = {[k: string]: number | string | any[] |object}
 
 export const getWhereMerchantName = (nameByReq: string) => {
@@ -17,10 +17,22 @@ export const getWhereMerchantName = (nameByReq: string) => {
   return merchantName;
 };
 
-export function getWhereAmountPartial(key: string, val: string, where: WhereType) {
-  [key, val, where].forEach(() => {
-    throw new Error('Function not implemented.');
-  });
+// changes the 'where' argument
+export function getWhereAmountPartial(key: string, val: number | undefined, where: WhereType) {
+  if ('number' === typeof val && 0.01 <= Math.abs(val)) {
+    const amountInCents = 100 * val;
+    switch (key) {
+      case 'amount':
+        where.amountInCents = amountInCents;
+        break;
+      case 'amount_min':
+        where.amountInCents = MoreThanOrEqual(amountInCents);
+        break;
+      case 'amount_max':
+        where.amountInCents = LessThanOrEqual(amountInCents);
+        break;
+    }
+  }
 }
 
 export const getWhere = (reqQueryWhere: JsonContentTypes) => {
@@ -36,7 +48,7 @@ export const getWhere = (reqQueryWhere: JsonContentTypes) => {
       case 'amount':
       case 'amountMin':
       case 'amountMax':
-        if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, reqQueryWhere[key].toString(), where); // changes 'where'!
+        if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, parseFloat(reqQueryWhere[key].toString()), where); // changes 'where'!
         break;
     }
   });

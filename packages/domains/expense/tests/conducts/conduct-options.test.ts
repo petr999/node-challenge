@@ -85,7 +85,7 @@ describe('Take "amount" from Request to findAndCount() arguments', () => {
     const [findArgs, conductError, userId] = [{ where: { amountInCents: 4450 } }, undefined, req.params.userId];
     const [where, whereExpected] = [{}, { amountInCents: 4450 }];
 
-    expect(getWhereAmountPartial('amount', '44.5', where)).not.toThrow();
+    expect(() => { getWhereAmountPartial('amount', 44.5, where); }).not.toThrowError();
     expect(where).toEqual(whereExpected);
     expect(getWhere(req.query.where)).toEqual(findArgs.where);
     expect(getFindArgs(req.query)).toEqual(findArgs);
