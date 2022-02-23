@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`User found in database User known to be contained in database got fetched: user-details-by-id-da140a29-ae80-4f0e-a62d-6c2d2bc8a474 1`] = `"{\\"first_name\\":\\"Jeppe\\",\\"last_name\\":\\"Rindom\\",\\"company_name\\":\\"pleo\\"}"`;
