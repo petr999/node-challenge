@@ -10,9 +10,6 @@ import { createConnection } from '@nc/utils/dal';
 export const mockConnection = () => createConnection({
   type: 'sqljs',
   entities: [
-    // LogEntry,
-    // User,
-    // Topic
   ],
   logging: false,
   dropSchema: true, // Isolate each test case

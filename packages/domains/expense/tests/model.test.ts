@@ -41,6 +41,7 @@ describe('Get User Expenses', () => {
     getUserDetailsMock.mockImplementation(() => new Promise((resolve, reject) => reject(NotFound)));
     try {
       await getUserExpenses(emptyUserId, {});
+      expect(() => {}).toThrow(); // should throw on previous line
     } catch (e) {
       expect(e.status).toBe(400);
     }

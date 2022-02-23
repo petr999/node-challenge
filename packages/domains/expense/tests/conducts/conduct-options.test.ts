@@ -80,7 +80,7 @@ describe('Take "merchantName" from Request to findAndCount() arguments', () => {
 });
 
 describe('Take "amount" from Request to findAndCount() arguments', () => {
-  test('Take "amount" string to "where" as cents from Request', () => {
+  test('Take "amount" string to "where" in cents from Request', () => {
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amount: '44.5' } } };
     const [findArgs, conductError, userId] = [{ where: { amountInCents: 4450 } }, undefined, req.params.userId];
     const [where, whereExpected] = [{}, { amountInCents: 4450 }];
@@ -90,5 +90,17 @@ describe('Take "amount" from Request to findAndCount() arguments', () => {
     expect(getWhere(req.query.where)).toEqual(findArgs.where);
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+});
+
+describe('Throw on both "amount_min" and "amount_max" from Request to findAndCount() arguments', () => {
+  test('Throw on both "amount_min" and "amount_max" strings to "where" from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amount_min: '44.5', amount_max: '8e1' } } };
+    try {
+      conductOptions(req);
+      expect(() => {}).toThrow(); // should throw on previous line
+    } catch (e) {
+      expect(e.status).toBe(500);
+    }
   });
 });
