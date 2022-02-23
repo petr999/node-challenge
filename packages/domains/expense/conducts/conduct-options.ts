@@ -17,6 +17,12 @@ export const getWhereMerchantName = (nameByReq: string) => {
   return merchantName;
 };
 
+export function getWhereAmountPartial(key: string, val: string, where: WhereType) {
+  [key, val, where].forEach(() => {
+    throw new Error('Function not implemented.');
+  });
+}
+
 export const getWhere = (reqQueryWhere: JsonContentTypes) => {
   const where: WhereType = {};
   Object.keys(reqQueryWhere).forEach((key) => {
@@ -26,6 +32,11 @@ export const getWhere = (reqQueryWhere: JsonContentTypes) => {
         break;
       case 'merchantName':
         if (reqQueryWhere?.merchantName && 'string' === typeof reqQueryWhere.merchantName) where.merchantName = getWhereMerchantName(reqQueryWhere.merchantName);
+        break;
+      case 'amount':
+      case 'amountMin':
+      case 'amountMax':
+        if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, reqQueryWhere[key].toString(), where); // changes 'where'!
         break;
     }
   });

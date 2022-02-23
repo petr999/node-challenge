@@ -1,7 +1,7 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
 import { BadRequest, Like } from '@nc/utils';
-import { conductOptions, getFindArgs, getWhere, getWhereMerchantName } from '../../conducts';
+import { conductOptions, getFindArgs, getWhere, getWhereAmountPartial, getWhereMerchantName } from '../../conducts';
 
 describe('Handle invalid Request', () => {
   test('Return error on empty Request', () => {
@@ -20,7 +20,7 @@ describe('Take user id from Request to Options', () => {
   });
 });
 
-describe('Take only the necessary keys from Request to findAndCount() arguments', () => {
+describe('Take "currency" from Request to findAndCount() arguments', () => {
   test('Take "currency" to "where" from Request, skip "bogus" from "where"', () => {
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { currency: 'DKK', notknown: 'bogus' } } };
     const [findArgs, conductError, userId] = [{ where: { currency: 'DKK' } }, undefined, req.params.userId];
@@ -38,7 +38,9 @@ describe('Take only the necessary keys from Request to findAndCount() arguments'
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
+});
 
+describe('Take "merchantName" from Request to findAndCount() arguments', () => {
   test('Take "merchantName" string to "where" as is from Request', () => {
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: 'Donkey Republic' } } };
     const [findArgs, conductError, userId] = [{ where: { merchantName: 'Donkey Republic' } }, undefined, req.params.userId];
@@ -47,6 +49,16 @@ describe('Take only the necessary keys from Request to findAndCount() arguments'
     expect(getFindArgs(req.query)).toEqual(findArgs);
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
+
+  test('Take "merchantName" string to "where", skipping "bogus" as is from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: 'Donkey Republic', notknown: 'bogus' } } };
+    const [findArgs, conductError, userId] = [{ where: { merchantName: 'Donkey Republic' } }, undefined, req.params.userId];
+
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
   test('Not take "merchantName" object to "where" as is from Request', () => {
     const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { merchantName: { short: 'Donkey Republic' } } } };
     const [findArgs, conductError, userId] = [{ where: { } }, undefined, req.params.userId];
@@ -67,30 +79,16 @@ describe('Take only the necessary keys from Request to findAndCount() arguments'
   });
 });
 
-// TBD
+describe('Take "amount" from Request to findAndCount() arguments', () => {
+  test('Take "amount" string to "where" as cents from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amount: '44.5' } } };
+    const [findArgs, conductError, userId] = [{ where: { amountInCents: 4450 } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, { amountInCents: 4450 }];
 
-// describe('Arguments to find user\'s expenses', () => {
-//   describe('Get user\'s ID and arguments for expenses to find()', () => {
-//     test('Return user\'s ID in userId field', () => {
-//       return expect('mario').toEqual('Mario');
-//     });
-//   });
-// });
-
-// describe('Make user\'s input a valid argument for expenses to find() ', () => {
-//   describe('Throw on invalid user\'s input', () => {
-//     test('Throw on invalid user ID', () => {
-//       return expect(({
-//         first_name: 'John',
-//         last_name: 'Smith',
-//         company_name: 'Pleo',
-//         ssn: '1',
-//         id: '1',
-//       })).toEqual(JSON.stringify({
-//         first_name: 'John',
-//         last_name: 'Smith',
-//         company_name: 'Pleo',
-//       }));
-//     });
-//   });
-// });
+    expect(getWhereAmountPartial('amount', '44.5', where)).not.toThrow();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+});
