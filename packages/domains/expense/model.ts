@@ -22,7 +22,7 @@ export async function getUserExpenses(userId, findArgs): Promise<ExpensesFormatt
     throw InternalError(`Error fetching data from the DB: ${dbError.message}`);
   }
 
-  const expenses: ExpensesFormatted = [rawExpenses[0].map((rawExpense) => format(rawExpense)), rawExpenses[1]];
+  const expenses: ExpensesFormatted = [format(rawExpenses[0]), rawExpenses[1]];
 
   return expenses;
 }

@@ -16,10 +16,12 @@ export function secureTrim(expenses: ExpenseFormatted[], count: number): string 
   return JSON.stringify([expensesPublic, count]);
 }
 
-export function format(rawExpense: Expense): ExpenseFormatted {
-  const { amountInCents, ...expense } = rawExpense;
-  const amount = (amountInCents / 100).toFixed(2);
-  return {
-    amount, ...expense,
-  };
+export function format(rawExpenses: Expense[]): ExpenseFormatted[] {
+  return rawExpenses?.map((rawExpense) => {
+    const { amountInCents, ...expense } = rawExpense;
+    const amount = (amountInCents / 100).toFixed(2);
+    return {
+      amount, ...expense,
+    };
+  });
 }
