@@ -127,3 +127,25 @@ describe('Take "amountMin" and "amountMax" from Request to findAndCount() argume
     expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
 });
+
+describe('Throw on single "dtCreatedFrom" or "dtCreatedTo" from Request to findAndCount() arguments', () => {
+  test('Throw on single "dtCreatedFrom"', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dtCreatedFrom: '2021-09-18', amountMax: '8e1' } } };
+    try {
+      conductOptions(req);
+      expect(() => {}).toThrow(); // should throw on previous line
+    } catch (e) {
+      expect(e.status).toBe(400);
+    }
+  });
+
+  test('Throw on single "dtCreatedTo"', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dtCreatedTo: '2021-09-20' } } };
+    try {
+      conductOptions(req);
+      expect(() => {}).toThrow(); // should throw on previous line
+    } catch (e) {
+      expect(e.status).toBe(400);
+    }
+  });
+});
