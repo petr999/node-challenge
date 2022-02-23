@@ -37,6 +37,8 @@ export function getWhereAmountPartial(key: string, val: number | undefined, wher
 
 export const getWhere = (reqQueryWhere: JsonContentTypes) => {
   const where: WhereType = {};
+  let dateCreatedFrom;
+  let dateCreatedTo;
   Object.keys(reqQueryWhere).forEach((key) => {
     switch (key) {
       case 'currency':
@@ -51,6 +53,17 @@ export const getWhere = (reqQueryWhere: JsonContentTypes) => {
         if (where.amountInCents) throw (BadRequest('Only single amount* per request is allowed'));
         if (reqQueryWhere?.[key] && 'string' === typeof reqQueryWhere[key]) getWhereAmountPartial(key, parseFloat(reqQueryWhere[key].toString()), where); // this changes the 'where'!
         break;
+      case 'dateCreatedFrom':
+        dateCreatedFrom = reqQueryWhere.dateCreatedFrom.toString();
+        break;
+      case 'dateCreatedTo':
+        dateCreatedTo = reqQueryWhere.dateCreatedTo.toString();
+        break;
+    }
+    if ((dateCreatedFrom && !dateCreatedTo) || (!dateCreatedFrom && dateCreatedTo)) {
+      throw BadRequest('Both "dateCreatedFrom" and "dateCreatedTo"');
+    } else if (dateCreatedFrom && dateCreatedTo) {
+      // where.dateCreated = Between(Date.parse(dateCreatedFrom), Date.parse(dateCreatedTo))
     }
   });
 

@@ -128,9 +128,9 @@ describe('Take "amountMin" and "amountMax" from Request to findAndCount() argume
   });
 });
 
-describe('Throw on single "dtCreatedFrom" or "dtCreatedTo" from Request to findAndCount() arguments', () => {
-  test('Throw on single "dtCreatedFrom"', () => {
-    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dtCreatedFrom: '2021-09-18', amountMax: '8e1' } } };
+describe('Throw on single "dateCreatedFrom" or "dateCreatedTo" from Request to findAndCount() arguments', () => {
+  test('Throw on single "dateCreatedFrom"', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dateCreatedFrom: '2021-09-18', amountMax: '8e1' } } };
     try {
       conductOptions(req);
       expect(() => {}).toThrow(); // should throw on previous line
@@ -139,8 +139,8 @@ describe('Throw on single "dtCreatedFrom" or "dtCreatedTo" from Request to findA
     }
   });
 
-  test('Throw on single "dtCreatedTo"', () => {
-    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dtCreatedTo: '2021-09-20' } } };
+  test('Throw on single "dateCreatedTo"', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { dateCreatedTo: '2021-09-20' } } };
     try {
       conductOptions(req);
       expect(() => {}).toThrow(); // should throw on previous line
