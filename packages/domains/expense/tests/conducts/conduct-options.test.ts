@@ -1,8 +1,16 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
-describe('dummy', () => {
-  test('true', () => {
-    expect(true).toBe(true);
+import { conductOptions } from "../../conducts";
+
+const req = {params: {}, query: {},}
+
+describe('Throw on invalid Request', () => {
+  test('Throw on empty Request', () => {
+    try{
+      conductOptions(req)
+    } catch(e){
+      expect(e.status).toBe(400);
+    }
   });
 }); // TBD
 
