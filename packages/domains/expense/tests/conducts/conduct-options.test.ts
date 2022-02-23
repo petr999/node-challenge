@@ -1,16 +1,22 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
-import { conductOptions } from "../../conducts";
+import { BadRequest } from '@nc/utils';
+import { conductOptions } from '../../conducts';
 
-describe('Throw on invalid Request', () => {
-  test('Throw on empty Request', () => {
-    const req = {params: {}, query: {},}
+describe('Handle invalid Request', () => {
+  test('Return error on empty Request', () => {
+    const req = { params: {}, query: {} };
 
-    try{
-      conductOptions(req)
-    } catch(e){
-      expect(e.status).toBe(400);
-    }
+    const [findArgs, conductError, userId] = [{}, BadRequest('User: not set'), undefined];
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+});
+
+describe('Take user id from Request to Options', () => {
+  test('Take user id Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: {} };
+    const [findArgs, conductError, userId] = [{}, undefined, req.params.userId];
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
 });
 

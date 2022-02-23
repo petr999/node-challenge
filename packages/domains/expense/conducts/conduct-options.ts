@@ -7,7 +7,7 @@ export const getFindArgs = (reqQuery) => {
   return findArgs;
 };
 
-export const conductOptions = (req: Pick<Request,'params'| 'query'>) => {
+export const conductOptions = (req: Pick<Request, 'params'| 'query'>) => {
   let conductError;
 
   const userId = req.params?.userId;
