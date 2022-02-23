@@ -1,6 +1,6 @@
 // // import { conductGetUserExpenses, getFindArgs } from '../../conductors';
 
-import { BadRequest, Like } from '@nc/utils';
+import { BadRequest, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
 import { conductOptions, getFindArgs, getWhere, getWhereAmountPartial, getWhereMerchantName } from '../../conducts';
 
 describe('Handle invalid Request', () => {
@@ -102,5 +102,30 @@ describe('Throw on both "amount_min" and "amount_max" from Request to findAndCou
     } catch (e) {
       expect(e.status).toBe(400);
     }
+  });
+});
+
+describe('Take "amountMin" and "amountMax" from Request to findAndCount() arguments', () => {
+  test('Take "amountMin" string to "where" in cents from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMin: '44.5' } } };
+    const [findArgs, conductError, userId] = [{ where: { amountInCents: MoreThanOrEqual(4450) } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, { amountInCents: MoreThanOrEqual(4450) }];
+
+    expect(() => { getWhereAmountPartial('amountMin', 44.5, where); }).not.toThrowError();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+  test('Take "amountMax" string to "where" in cents from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMax: '44.5' } } };
+    const [findArgs, conductError, userId] = [{ where: { amountInCents: LessThanOrEqual(4450) } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, { amountInCents: LessThanOrEqual(4450) }];
+
+    expect(() => { getWhereAmountPartial('amountMax', 44.5, where); }).not.toThrowError();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
 });
