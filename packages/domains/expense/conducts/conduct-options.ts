@@ -1,7 +1,7 @@
 import { BadRequest } from '@nc/utils/errors';
 import { Expense } from '../entity';
 import { Request } from 'express';
-import { FindConditions, FindOperator, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
+import { Between, FindConditions, FindOperator, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
 // const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
@@ -35,15 +35,14 @@ export function getWhereAmountPartial(key: string, val: number | undefined, wher
   }
 }
 
-export const getWhereDatetimePartial = ( // dateCreatedFrom: string, dateCreatedTo: string, where: WhereType
-) => {
-// dateCreatedFrom = dateCreatedFrom.replace(/(?<!Z)$/,'Z')
-// dateCreatedTo = dateCreatedTo.replace(/(?<!Z)$/,'Z')
+export const getWhereDatetimePartial = (dateCreatedFrom: string, dateCreatedTo: string, where: WhereType) => {
+  dateCreatedFrom = dateCreatedFrom.replace(/(?<!Z)$/, 'Z');
+  dateCreatedTo = dateCreatedTo.replace(/(?<!Z)$/, 'Z');
 
-  // const dateObjFrom = new Date(dateCreatedFrom)
-  // const dateObjTo = new Date(dateCreatedTo)
+  const dateObjFrom = new Date(dateCreatedFrom);
+  const dateObjTo = new Date(dateCreatedTo);
 
-// where.dateCreated = Between(dateObjFrom, dateObjTo)
+  where.dateCreated = Between(dateObjFrom, dateObjTo);
 };
 
 export const getWhere = (reqQueryWhere: JsonContentTypes) => {
@@ -71,12 +70,12 @@ export const getWhere = (reqQueryWhere: JsonContentTypes) => {
         dateCreatedTo = reqQueryWhere.dateCreatedTo.toString();
         break;
     }
-    if ((dateCreatedFrom && !dateCreatedTo) || (!dateCreatedFrom && dateCreatedTo)) {
-      throw BadRequest('Both "dateCreatedFrom" and "dateCreatedTo"');
-    } else if (dateCreatedFrom && dateCreatedTo) {
-      // where.dateCreated = Between(Date.parse(dateCreatedFrom), Date.parse(dateCreatedTo))
-    }
   });
+  if ((dateCreatedFrom && !dateCreatedTo) || (!dateCreatedFrom && dateCreatedTo)) {
+    throw BadRequest('Both "dateCreatedFrom" and "dateCreatedTo"');
+  } else if (dateCreatedFrom && dateCreatedTo) {
+    getWhereDatetimePartial(dateCreatedFrom, dateCreatedTo, where);
+  }
 
   return where;
 };
