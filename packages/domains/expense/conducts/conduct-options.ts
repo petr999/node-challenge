@@ -6,7 +6,7 @@ import { FindConditions, FindOperator, LessThanOrEqual, Like, MoreThanOrEqual } 
 const queryKeysToFind = 'take  skip  where  order'.split(/\s+/);
 // const queryColumnsToMatch = 'merchantName amountInCents currency'.split(/\s+/);
 
-type WhereType = {[k: string]: number | string | FindOperator<string|number> }
+type WhereType = {[k: string]: number | string | FindOperator<string|number|Date> }
 type JsonContentTypes = {[k: string]: number | string | any[] |object}
 
 export const getWhereMerchantName = (nameByReq: string) => {
@@ -34,6 +34,17 @@ export function getWhereAmountPartial(key: string, val: number | undefined, wher
     }
   }
 }
+
+export const getWhereDatetimePartial = ( // dateCreatedFrom: string, dateCreatedTo: string, where: WhereType
+) => {
+// dateCreatedFrom = dateCreatedFrom.replace(/(?<!Z)$/,'Z')
+// dateCreatedTo = dateCreatedTo.replace(/(?<!Z)$/,'Z')
+
+  // const dateObjFrom = new Date(dateCreatedFrom)
+  // const dateObjTo = new Date(dateCreatedTo)
+
+// where.dateCreated = Between(dateObjFrom, dateObjTo)
+};
 
 export const getWhere = (reqQueryWhere: JsonContentTypes) => {
   const where: WhereType = {};

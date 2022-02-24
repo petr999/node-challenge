@@ -1,5 +1,5 @@
-import { BadRequest, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
-import { conductOptions, getFindArgs, getWhere, getWhereAmountPartial, getWhereMerchantName } from '../../conducts';
+import { BadRequest, Between, LessThanOrEqual, Like, MoreThanOrEqual } from '@nc/utils';
+import { conductOptions, getFindArgs, getWhere, getWhereAmountPartial, getWhereDatetimePartial, getWhereMerchantName } from '../../conducts';
 
 describe('Handle invalid Request', () => {
   test('Return error on empty Request', () => {
@@ -147,5 +147,43 @@ describe('Throw on single "dateCreatedFrom" or "dateCreatedTo" from Request to f
     } catch (e) {
       expect(e.status).toBe(400);
     }
+  });
+});
+
+describe('Take "dateCreatedFrom" and "dateCreatedTo" from Request to findAndCount() arguments', () => {
+  test('Take "dateCreatedFrom" string as "YYYY-MM-DD" and "dateCreatedTo" string as "YYYY-MM-DDZ" to "where" from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMin: '44.5', dateCreatedFrom: '2021-09-18', dateCreatedTo: '2021-09-20Z' } } };
+    const [findArgs, conductError, userId] = [{ where: { dateCreated: Between(new Date('2021-09-18Z'), new Date('2021-09-20Z')) } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, findArgs.where];
+
+    expect(() => { getWhereDatetimePartial('2021-09-18', '2021-09-20Z', where); }).not.toThrowError();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
+  test('Take "dateCreatedFrom" string as "YYYY-MMZ" and "dateCreatedTo" string as "YYYY-MM" to "where" from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMin: '44.5', dateCreatedFrom: '2021-09-18Z', dateCreatedTo: '2021-09' } } };
+    const [findArgs, conductError, userId] = [{ where: { dateCreated: Between(new Date('2021-09-18Z'), new Date('2021-09-01Z')) } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, findArgs.where];
+
+    expect(() => { getWhereDatetimePartial('2021-09-18Z', '2021-09', where); }).not.toThrowError();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
+  });
+
+  test('Take "dateCreatedFrom" string as "YYYY" and "dateCreatedTo" string as "YYYYZ" to "where" from Request', () => {
+    const req = { params: { userId: 'f64afaed-6d30-4be5-b7cb-422799a1a406' }, query: { where: { amountMin: '44.5', dateCreatedFrom: '2021', dateCreatedTo: '2022Z' } } };
+    const [findArgs, conductError, userId] = [{ where: { dateCreated: Between(new Date('2021-01-01Z'), new Date('2022-01-01Z')) } }, undefined, req.params.userId];
+    const [where, whereExpected] = [{}, findArgs.where];
+
+    expect(() => { getWhereDatetimePartial('2021', '2022Z', where); }).not.toThrowError();
+    expect(where).toEqual(whereExpected);
+    expect(getWhere(req.query.where)).toEqual(findArgs.where);
+    expect(getFindArgs(req.query)).toEqual(findArgs);
+    expect(conductOptions(req)).toEqual({ findArgs, conductError, userId });
   });
 });
